@@ -1,10 +1,9 @@
-import {ValidationOptions} from "../decorator/ValidationOptions";
+import { ValidationOptions } from "../validation/ValidationOptions";
 
 /**
  * Constructor arguments for ValidationMetadata class.
  */
 export interface ValidationMetadataArgs {
-
     /**
      * Validation type.
      */
@@ -13,7 +12,7 @@ export interface ValidationMetadataArgs {
     /**
      * Object that is used to be validated.
      */
-    target: Function|string;
+    target: Function | string;
 
     /**
      * Property of the object to be validated.

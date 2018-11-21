@@ -1,12 +1,12 @@
 import "es6-shim";
-import {Validator} from "../../src/validation/Validator";
-import {ValidationArguments} from "../../src/validation/ValidationArguments";
-import {registerDecorator} from "../../src/register-decorator";
-import {ValidationOptions} from "../../src/decorator/ValidationOptions";
-import {ValidatorConstraint} from "../../src/decorator/decorators";
-import {ValidatorConstraintInterface} from "../../src/validation/ValidatorConstraintInterface";
+import { Validator } from "../../src/validation/Validator";
+import { ValidationArguments } from "../../src/validation/ValidationArguments";
+import { registerDecorator } from "../../src/register-decorator";
+import { ValidationOptions } from "../../src/validation/ValidationOptions";
+import { ValidatorConstraint } from "../../src/decorator/decorators";
+import { ValidatorConstraintInterface } from "../../src/validation/ValidatorConstraintInterface";
 
-import {should, use } from "chai";
+import { should, use } from "chai";
 
 import * as chaiAsPromised from "chai-as-promised";
 
@@ -24,11 +24,12 @@ const validator = new Validator();
 // -------------------------------------------------------------------------
 
 describe("custom decorators", function() {
-
     describe("decorator with inline validation", function() {
-
-        function IsLongerThan(property: string, validationOptions?: ValidationOptions) {
-            return function (object: Object, propertyName: string) {
+        function IsLongerThan(
+            property: string,
+            validationOptions?: ValidationOptions
+        ) {
+            return function(object: Object, propertyName: string) {
                 registerDecorator({
                     target: object.constructor,
                     propertyName: propertyName,
@@ -38,25 +39,33 @@ describe("custom decorators", function() {
                     validator: {
                         validate(value: any, args: ValidationArguments) {
                             const [relatedPropertyName] = args.constraints;
-                            const relatedValue = (args.object as any)[relatedPropertyName];
-                            if (relatedValue === undefined || relatedValue === null)
+                            const relatedValue = (args.object as any)[
+                                relatedPropertyName
+                            ];
+                            if (
+                                relatedValue === undefined ||
+                                relatedValue === null
+                            )
                                 return true;
-                            
-                            return typeof value === "string" &&
+
+                            return (
+                                typeof value === "string" &&
                                 typeof relatedValue === "string" &&
-                                value.length > relatedValue.length;
+                                value.length > relatedValue.length
+                            );
                         }
                     }
                 });
             };
         }
-        
+
         class MyClass {
             @IsLongerThan("lastName", {
-                message: "$property must be longer then $constraint1. Given value: $value"
+                message:
+                    "$property must be longer then $constraint1. Given value: $value"
             })
             firstName: string;
-            
+
             lastName: string;
         }
 
@@ -74,7 +83,10 @@ describe("custom decorators", function() {
             model.lastName = "Kim";
             return validator.validate(model).then(errors => {
                 errors.length.should.be.equal(1);
-                errors[0].constraints.should.be.eql({ isLongerThan: "firstName must be longer then lastName. Given value: " });
+                errors[0].constraints.should.be.eql({
+                    isLongerThan:
+                        "firstName must be longer then lastName. Given value: "
+                });
             });
         });
 
@@ -84,16 +96,20 @@ describe("custom decorators", function() {
             model.lastName = "Kim";
             return validator.validate(model).then(errors => {
                 errors.length.should.be.equal(1);
-                errors[0].constraints.should.be.eql({ isLongerThan: "firstName must be longer then lastName. Given value: Li" });
+                errors[0].constraints.should.be.eql({
+                    isLongerThan:
+                        "firstName must be longer then lastName. Given value: Li"
+                });
             });
         });
-        
     });
-    
-    describe("decorator with default message", function() {
 
-        function IsLonger(property: string, validationOptions?: ValidationOptions) {
-            return function (object: Object, propertyName: string) {
+    describe("decorator with default message", function() {
+        function IsLonger(
+            property: string,
+            validationOptions?: ValidationOptions
+        ) {
+            return function(object: Object, propertyName: string) {
                 registerDecorator({
                     target: object.constructor,
                     propertyName: propertyName,
@@ -103,26 +119,37 @@ describe("custom decorators", function() {
                     validator: {
                         validate(value: any, args: ValidationArguments) {
                             const [relatedPropertyName] = args.constraints;
-                            const relatedValue = (args.object as any)[relatedPropertyName];
-                            if (relatedValue === undefined || relatedValue === null)
+                            const relatedValue = (args.object as any)[
+                                relatedPropertyName
+                            ];
+                            if (
+                                relatedValue === undefined ||
+                                relatedValue === null
+                            )
                                 return true;
-                            
-                            return typeof value === "string" &&
+
+                            return (
+                                typeof value === "string" &&
                                 typeof relatedValue === "string" &&
-                                value.length > relatedValue.length;
+                                value.length > relatedValue.length
+                            );
                         },
                         defaultMessage(args: ValidationArguments) {
-                            return args.property + " must be longer then " + args.constraints[0];
+                            return (
+                                args.property +
+                                " must be longer then " +
+                                args.constraints[0]
+                            );
                         }
                     }
                 });
             };
         }
-        
+
         class SecondClass {
             @IsLonger("lastName")
             firstName: string;
-            
+
             lastName: string;
         }
 
@@ -140,7 +167,9 @@ describe("custom decorators", function() {
             model.lastName = "Kim";
             return validator.validate(model).then(errors => {
                 errors.length.should.be.equal(1);
-                errors[0].constraints.should.be.eql({ isLonger: "firstName must be longer then lastName" });
+                errors[0].constraints.should.be.eql({
+                    isLonger: "firstName must be longer then lastName"
+                });
             });
         });
 
@@ -150,32 +179,34 @@ describe("custom decorators", function() {
             model.lastName = "Kim";
             return validator.validate(model).then(errors => {
                 errors.length.should.be.equal(1);
-                errors[0].constraints.should.be.eql({ isLonger: "firstName must be longer then lastName" });
+                errors[0].constraints.should.be.eql({
+                    isLonger: "firstName must be longer then lastName"
+                });
             });
         });
-        
     });
 
     describe("decorator with separate validation constraint class", function() {
-
         @ValidatorConstraint({ name: "isShortenThan" })
         class IsShortenThanConstraint implements ValidatorConstraintInterface {
-
             validate(value: any, args: ValidationArguments) {
                 const [relatedPropertyName] = args.constraints;
                 const relatedValue = (args.object as any)[relatedPropertyName];
-                if (value === null || value === undefined)
-                    return true;
-                
-                return  typeof value === "string" &&
-                        typeof relatedValue === "string" &&
-                        value.length < relatedValue.length;
-            }
+                if (value === null || value === undefined) return true;
 
+                return (
+                    typeof value === "string" &&
+                    typeof relatedValue === "string" &&
+                    value.length < relatedValue.length
+                );
+            }
         }
 
-        function IsShortenThan(property: string, validationOptions?: ValidationOptions) {
-            return function (object: Object, propertyName: string) {
+        function IsShortenThan(
+            property: string,
+            validationOptions?: ValidationOptions
+        ) {
+            return function(object: Object, propertyName: string) {
                 registerDecorator({
                     target: object.constructor,
                     propertyName: propertyName,
@@ -190,7 +221,8 @@ describe("custom decorators", function() {
             firstName: string;
 
             @IsShortenThan("firstName", {
-                message: "$property must be shorter then $constraint1. Given value: $value"
+                message:
+                    "$property must be shorter then $constraint1. Given value: $value"
             })
             lastName: string;
         }
@@ -209,7 +241,10 @@ describe("custom decorators", function() {
             model.lastName = "Kim";
             return validator.validate(model).then(errors => {
                 errors.length.should.be.equal(1);
-                errors[0].constraints.should.be.eql({ isShortenThan: "lastName must be shorter then firstName. Given value: Kim" });
+                errors[0].constraints.should.be.eql({
+                    isShortenThan:
+                        "lastName must be shorter then firstName. Given value: Kim"
+                });
             });
         });
 
@@ -219,10 +254,11 @@ describe("custom decorators", function() {
             model.lastName = "Kim";
             return validator.validate(model).then(errors => {
                 errors.length.should.be.equal(1);
-                errors[0].constraints.should.be.eql({ isShortenThan: "lastName must be shorter then firstName. Given value: Kim" });
+                errors[0].constraints.should.be.eql({
+                    isShortenThan:
+                        "lastName must be shorter then firstName. Given value: Kim"
+                });
             });
         });
-
     });
-
 });

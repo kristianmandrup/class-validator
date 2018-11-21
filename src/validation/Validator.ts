@@ -1,33 +1,45 @@
-import {ValidationMetadata} from "../metadata/ValidationMetadata";
-import {ValidationTypes} from "./ValidationTypes";
-import {ValidationError} from "./ValidationError";
-import {IsNumberOptions} from "./ValidationTypeOptions";
-import {ValidatorOptions} from "./ValidatorOptions";
-import {ValidationExecutor} from "./ValidationExecutor";
-import {ValidationOptions} from "../decorator/ValidationOptions";
+import { ValidationMetadata } from "../metadata/ValidationMetadata";
+import { ValidationTypes } from "./ValidationTypes";
+import { ValidationError } from "./ValidationError";
+import { IsNumberOptions } from "./ValidationTypeOptions";
+import { ValidatorOptions } from "./ValidatorOptions";
+import { ValidationExecutor } from "./ValidationExecutor";
+import { ValidationOptions } from "./ValidationOptions";
 
 /**
  * Validator performs validation of the given object based on its metadata.
  */
 export class Validator {
-
     // -------------------------------------------------------------------------
     // Private Properties
     // -------------------------------------------------------------------------
 
     private validatorJs = require("validator");
     private libPhoneNumber = {
-        phoneUtil: require("google-libphonenumber").PhoneNumberUtil.getInstance(),
+        phoneUtil: require("google-libphonenumber").PhoneNumberUtil.getInstance()
     };
 
     /**
      * Performs validation of the given object based on decorators or validation schema.
      * Common method for `validateOrReject` and `validate` methods.
      */
-    private coreValidate(objectOrSchemaName: Object|string, objectOrValidationOptions: Object|ValidationOptions, maybeValidatorOptions?: ValidatorOptions): Promise<ValidationError[]> {
-        const object = typeof objectOrSchemaName === "string" ? objectOrValidationOptions as Object : objectOrSchemaName as Object;
-        const options = typeof objectOrSchemaName === "string" ? maybeValidatorOptions : objectOrValidationOptions as ValidationOptions;
-        const schema = typeof objectOrSchemaName === "string" ? objectOrSchemaName as string : undefined;
+    private coreValidate(
+        objectOrSchemaName: Object | string,
+        objectOrValidationOptions: Object | ValidationOptions,
+        maybeValidatorOptions?: ValidatorOptions
+    ): Promise<ValidationError[]> {
+        const object =
+            typeof objectOrSchemaName === "string"
+                ? (objectOrValidationOptions as Object)
+                : (objectOrSchemaName as Object);
+        const options =
+            typeof objectOrSchemaName === "string"
+                ? maybeValidatorOptions
+                : (objectOrValidationOptions as ValidationOptions);
+        const schema =
+            typeof objectOrSchemaName === "string"
+                ? (objectOrSchemaName as string)
+                : undefined;
 
         const executor = new ValidationExecutor(this, options);
         const validationErrors: ValidationError[] = [];
@@ -45,18 +57,33 @@ export class Validator {
     /**
      * Performs validation of the given object based on decorators used in given object class.
      */
-    validate(object: Object, options?: ValidatorOptions): Promise<ValidationError[]>;
+    validate(
+        object: Object,
+        options?: ValidatorOptions
+    ): Promise<ValidationError[]>;
 
     /**
      * Performs validation of the given object based on validation schema.
      */
-    validate(schemaName: string, object: Object, options?: ValidatorOptions): Promise<ValidationError[]>;
+    validate(
+        schemaName: string,
+        object: Object,
+        options?: ValidatorOptions
+    ): Promise<ValidationError[]>;
 
     /**
      * Performs validation of the given object based on decorators or validation schema.
      */
-    validate(objectOrSchemaName: Object|string, objectOrValidationOptions: Object|ValidationOptions, maybeValidatorOptions?: ValidatorOptions): Promise<ValidationError[]> {
-        return this.coreValidate(objectOrSchemaName, objectOrValidationOptions, maybeValidatorOptions);
+    validate(
+        objectOrSchemaName: Object | string,
+        objectOrValidationOptions: Object | ValidationOptions,
+        maybeValidatorOptions?: ValidatorOptions
+    ): Promise<ValidationError[]> {
+        return this.coreValidate(
+            objectOrSchemaName,
+            objectOrValidationOptions,
+            maybeValidatorOptions
+        );
     }
 
     /**
@@ -67,15 +94,26 @@ export class Validator {
     /**
      * Performs validation of the given object based on validation schema and reject on error.
      */
-    validateOrReject(schemaName: string, object: Object, options?: ValidatorOptions): Promise<void>;
+    validateOrReject(
+        schemaName: string,
+        object: Object,
+        options?: ValidatorOptions
+    ): Promise<void>;
 
     /**
      * Performs validation of the given object based on decorators or validation schema and reject on error.
      */
-    async validateOrReject(objectOrSchemaName: Object|string, objectOrValidationOptions: Object|ValidationOptions, maybeValidatorOptions?: ValidatorOptions): Promise<void> {
-        const errors = await this.coreValidate(objectOrSchemaName, objectOrValidationOptions, maybeValidatorOptions);
-        if (errors.length)
-            return Promise.reject(errors);
+    async validateOrReject(
+        objectOrSchemaName: Object | string,
+        objectOrValidationOptions: Object | ValidationOptions,
+        maybeValidatorOptions?: ValidatorOptions
+    ): Promise<void> {
+        const errors = await this.coreValidate(
+            objectOrSchemaName,
+            objectOrValidationOptions,
+            maybeValidatorOptions
+        );
+        if (errors.length) return Promise.reject(errors);
     }
 
     /**
@@ -87,15 +125,32 @@ export class Validator {
     /**
      * Performs validation of the given object based on validation schema.
      */
-    validateSync(schemaName: string, object: Object, options?: ValidatorOptions): ValidationError[];
+    validateSync(
+        schemaName: string,
+        object: Object,
+        options?: ValidatorOptions
+    ): ValidationError[];
 
     /**
      * Performs validation of the given object based on decorators or validation schema.
      */
-    validateSync(objectOrSchemaName: Object|string, objectOrValidationOptions: Object|ValidationOptions, maybeValidatorOptions?: ValidatorOptions): ValidationError[] {
-        const object = typeof objectOrSchemaName === "string" ? objectOrValidationOptions as Object : objectOrSchemaName as Object;
-        const options = typeof objectOrSchemaName === "string" ? maybeValidatorOptions : objectOrValidationOptions as ValidationOptions;
-        const schema = typeof objectOrSchemaName === "string" ? objectOrSchemaName as string : undefined;
+    validateSync(
+        objectOrSchemaName: Object | string,
+        objectOrValidationOptions: Object | ValidationOptions,
+        maybeValidatorOptions?: ValidatorOptions
+    ): ValidationError[] {
+        const object =
+            typeof objectOrSchemaName === "string"
+                ? (objectOrValidationOptions as Object)
+                : (objectOrSchemaName as Object);
+        const options =
+            typeof objectOrSchemaName === "string"
+                ? maybeValidatorOptions
+                : (objectOrValidationOptions as ValidationOptions);
+        const schema =
+            typeof objectOrSchemaName === "string"
+                ? (objectOrSchemaName as string)
+                : undefined;
 
         const executor = new ValidationExecutor(this, options);
         executor.ignoreAsyncValidations = true;
@@ -181,7 +236,11 @@ export class Validator {
             case ValidationTypes.IS_BASE64:
                 return this.isBase64(value);
             case ValidationTypes.IS_BYTE_LENGTH:
-                return this.isByteLength(value, metadata.constraints[0], metadata.constraints[1]);
+                return this.isByteLength(
+                    value,
+                    metadata.constraints[0],
+                    metadata.constraints[1]
+                );
             case ValidationTypes.IS_CREDIT_CARD:
                 return this.isCreditCard(value);
             case ValidationTypes.IS_CURRENCY:
@@ -229,13 +288,21 @@ export class Validator {
             case ValidationTypes.IS_UPPERCASE:
                 return this.isUppercase(value);
             case ValidationTypes.LENGTH:
-                return this.length(value, metadata.constraints[0], metadata.constraints[1]);
+                return this.length(
+                    value,
+                    metadata.constraints[0],
+                    metadata.constraints[1]
+                );
             case ValidationTypes.MIN_LENGTH:
                 return this.minLength(value, metadata.constraints[0]);
             case ValidationTypes.MAX_LENGTH:
                 return this.maxLength(value, metadata.constraints[0]);
             case ValidationTypes.MATCHES:
-                return this.matches(value, metadata.constraints[0], metadata.constraints[1]);
+                return this.matches(
+                    value,
+                    metadata.constraints[0],
+                    metadata.constraints[1]
+                );
             case ValidationTypes.IS_MILITARY_TIME:
                 return this.isMilitaryTime(value);
 
@@ -302,14 +369,20 @@ export class Validator {
      * Checks if given value is in a array of allowed values.
      */
     isIn(value: any, possibleValues: any[]): boolean {
-        return !(possibleValues instanceof Array) || possibleValues.some(possibleValue => possibleValue === value);
+        return (
+            !(possibleValues instanceof Array) ||
+            possibleValues.some(possibleValue => possibleValue === value)
+        );
     }
 
     /**
      * Checks if given value not in a array of allowed values.
      */
     isNotIn(value: any, possibleValues: any[]): boolean {
-        return !(possibleValues instanceof Array) || !possibleValues.some(possibleValue => possibleValue === value);
+        return (
+            !(possibleValues instanceof Array) ||
+            !possibleValues.some(possibleValue => possibleValue === value)
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -356,8 +429,7 @@ export class Validator {
      * Checks if a given value is an enum
      */
     isEnum(value: any, entity: any): boolean {
-        const enumValues = Object.keys(entity)
-            .map(k => entity[k]);
+        const enumValues = Object.keys(entity).map(k => entity[k]);
         return enumValues.indexOf(value) >= 0;
     }
 
@@ -391,9 +463,11 @@ export class Validator {
      * Checks if value is a number that's divisible by another.
      */
     isDivisibleBy(value: number, num: number): boolean {
-        return  typeof value === "number" &&
+        return (
+            typeof value === "number" &&
             typeof num === "number" &&
-            this.validatorJs.isDivisibleBy(String(value), num);
+            this.validatorJs.isDivisibleBy(String(value), num)
+        );
     }
 
     /**
@@ -458,8 +532,14 @@ export class Validator {
      * Checks if the string is numeric.
      * If given value is not a string, then it returns false.
      */
-    isNumberString(value: string, options?: ValidatorJS.IsNumericOptions): boolean {
-        return typeof value === "string" && this.validatorJs.isNumeric(value, options);
+    isNumberString(
+        value: string,
+        options?: ValidatorJS.IsNumericOptions
+    ): boolean {
+        return (
+            typeof value === "string" &&
+            this.validatorJs.isNumeric(value, options)
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -471,7 +551,9 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     contains(value: string, seed: string): boolean {
-        return typeof value === "string" && this.validatorJs.contains(value, seed);
+        return (
+            typeof value === "string" && this.validatorJs.contains(value, seed)
+        );
     }
 
     /**
@@ -479,7 +561,9 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     notContains(value: string, seed: string): boolean {
-        return typeof value === "string" && !this.validatorJs.contains(value, seed);
+        return (
+            typeof value === "string" && !this.validatorJs.contains(value, seed)
+        );
     }
 
     /**
@@ -495,7 +579,9 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isAlphanumeric(value: string): boolean {
-        return typeof value === "string" && this.validatorJs.isAlphanumeric(value);
+        return (
+            typeof value === "string" && this.validatorJs.isAlphanumeric(value)
+        );
     }
 
     /**
@@ -519,7 +605,10 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isByteLength(value: string, min: number, max?: number): boolean {
-        return typeof value === "string" && this.validatorJs.isByteLength(value, min, max);
+        return (
+            typeof value === "string" &&
+            this.validatorJs.isByteLength(value, min, max)
+        );
     }
 
     /**
@@ -527,15 +616,23 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isCreditCard(value: string): boolean {
-        return typeof value === "string" && this.validatorJs.isCreditCard(value);
+        return (
+            typeof value === "string" && this.validatorJs.isCreditCard(value)
+        );
     }
 
     /**
      * Checks if the string is a valid currency amount.
      * If given value is not a string, then it returns false.
      */
-    isCurrency(value: string, options?: ValidatorJS.IsCurrencyOptions): boolean {
-        return typeof value === "string" && this.validatorJs.isCurrency(value, options);
+    isCurrency(
+        value: string,
+        options?: ValidatorJS.IsCurrencyOptions
+    ): boolean {
+        return (
+            typeof value === "string" &&
+            this.validatorJs.isCurrency(value, options)
+        );
     }
 
     /**
@@ -543,7 +640,10 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isEmail(value: string, options?: ValidatorJS.IsEmailOptions): boolean {
-        return typeof value === "string" && this.validatorJs.isEmail(value, options);
+        return (
+            typeof value === "string" &&
+            this.validatorJs.isEmail(value, options)
+        );
     }
 
     /**
@@ -551,7 +651,9 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isFQDN(value: string, options?: ValidatorJS.IsFQDNOptions): boolean {
-        return typeof value === "string" && this.validatorJs.isFQDN(value, options);
+        return (
+            typeof value === "string" && this.validatorJs.isFQDN(value, options)
+        );
     }
 
     /**
@@ -575,7 +677,9 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isVariableWidth(value: string): boolean {
-        return typeof value === "string" && this.validatorJs.isVariableWidth(value);
+        return (
+            typeof value === "string" && this.validatorJs.isVariableWidth(value)
+        );
     }
 
     /**
@@ -591,23 +695,29 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isHexadecimal(value: string): boolean {
-        return typeof value === "string" && this.validatorJs.isHexadecimal(value);
+        return (
+            typeof value === "string" && this.validatorJs.isHexadecimal(value)
+        );
     }
 
     /**
      * Checks if the string is an IP (version 4 or 6).
      * If given value is not a string, then it returns false.
      */
-    isIP(value: string, version?: "4"|"6"): boolean {
-        return typeof value === "string" && this.validatorJs.isIP(value, version);
+    isIP(value: string, version?: "4" | "6"): boolean {
+        return (
+            typeof value === "string" && this.validatorJs.isIP(value, version)
+        );
     }
 
     /**
      * Checks if the string is an ISBN (version 10 or 13).
      * If given value is not a string, then it returns false.
      */
-    isISBN(value: string, version?: "10"|"13"): boolean {
-        return typeof value === "string" && this.validatorJs.isISBN(value, version);
+    isISBN(value: string, version?: "10" | "13"): boolean {
+        return (
+            typeof value === "string" && this.validatorJs.isISBN(value, version)
+        );
     }
 
     /**
@@ -647,8 +757,14 @@ export class Validator {
      * 'pt-PT', 'fr-FR', 'el-GR', 'en-GB', 'en-US', 'en-ZM', 'ru-RU', 'nb-NO', 'nn-NO', 'vi-VN', 'en-NZ']).
      * If given value is not a string, then it returns false.
      */
-    isMobilePhone(value: string, locale: ValidatorJS.MobilePhoneLocale): boolean {
-        return typeof value === "string" && this.validatorJs.isMobilePhone(value, locale);
+    isMobilePhone(
+        value: string,
+        locale: ValidatorJS.MobilePhoneLocale
+    ): boolean {
+        return (
+            typeof value === "string" &&
+            this.validatorJs.isMobilePhone(value, locale)
+        );
     }
 
     /**
@@ -660,7 +776,10 @@ export class Validator {
      */
     isPhoneNumber(value: string, region: string): boolean {
         try {
-            const phoneNum = this.libPhoneNumber.phoneUtil.parseAndKeepRawInput(value, region);
+            const phoneNum = this.libPhoneNumber.phoneUtil.parseAndKeepRawInput(
+                value,
+                region
+            );
             return this.libPhoneNumber.phoneUtil.isValidNumber(phoneNum);
         } catch (error) {
             // logging?
@@ -689,7 +808,9 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isSurrogatePair(value: string): boolean {
-        return typeof value === "string" && this.validatorJs.isSurrogatePair(value);
+        return (
+            typeof value === "string" && this.validatorJs.isSurrogatePair(value)
+        );
     }
 
     /**
@@ -697,15 +818,19 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     isURL(value: string, options?: ValidatorJS.IsURLOptions): boolean {
-        return typeof value === "string" && this.validatorJs.isURL(value, options);
+        return (
+            typeof value === "string" && this.validatorJs.isURL(value, options)
+        );
     }
 
     /**
      * Checks if the string is a UUID (version 3, 4 or 5).
      * If given value is not a string, then it returns false.
      */
-    isUUID(value: string, version?: "3"|"4"|"5"): boolean {
-        return typeof value === "string" && this.validatorJs.isUUID(value, version);
+    isUUID(value: string, version?: "3" | "4" | "5"): boolean {
+        return (
+            typeof value === "string" && this.validatorJs.isUUID(value, version)
+        );
     }
 
     /**
@@ -721,7 +846,10 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     length(value: string, min: number, max?: number): boolean {
-        return typeof value === "string" && this.validatorJs.isLength(value, min, max);
+        return (
+            typeof value === "string" &&
+            this.validatorJs.isLength(value, min, max)
+        );
     }
 
     /**
@@ -745,7 +873,10 @@ export class Validator {
      * If given value is not a string, then it returns false.
      */
     matches(value: string, pattern: RegExp, modifiers?: string): boolean {
-        return typeof value === "string" && this.validatorJs.matches(value, pattern, modifiers);
+        return (
+            typeof value === "string" &&
+            this.validatorJs.matches(value, pattern, modifiers)
+        );
     }
 
     /**
@@ -765,8 +896,7 @@ export class Validator {
      * If null or undefined is given then this function returns false.
      */
     arrayContains(array: any[], values: any[]) {
-        if (!(array instanceof Array))
-            return false;
+        if (!(array instanceof Array)) return false;
 
         return !array || values.every(value => array.indexOf(value) !== -1);
     }
@@ -776,8 +906,7 @@ export class Validator {
      * If null or undefined is given then this function returns false.
      */
     arrayNotContains(array: any[], values: any[]) {
-        if (!(array instanceof Array))
-            return false;
+        if (!(array instanceof Array)) return false;
 
         return !array || values.every(value => array.indexOf(value) === -1);
     }
@@ -787,8 +916,7 @@ export class Validator {
      * If null or undefined is given then this function returns false.
      */
     arrayNotEmpty(array: any[]) {
-        if (!(array instanceof Array))
-            return false;
+        if (!(array instanceof Array)) return false;
 
         return array instanceof Array && array.length > 0;
     }
@@ -798,8 +926,7 @@ export class Validator {
      * If null or undefined is given then this function returns false.
      */
     arrayMinSize(array: any[], min: number) {
-        if (!(array instanceof Array))
-            return false;
+        if (!(array instanceof Array)) return false;
 
         return array instanceof Array && array.length >= min;
     }
@@ -809,8 +936,7 @@ export class Validator {
      * If null or undefined is given then this function returns false.
      */
     arrayMaxSize(array: any[], max: number) {
-        if (!(array instanceof Array))
-            return false;
+        if (!(array instanceof Array)) return false;
 
         return array instanceof Array && array.length <= max;
     }
@@ -820,8 +946,7 @@ export class Validator {
      * If null or undefined is given then this function returns false.
      */
     arrayUnique(array: any[]) {
-        if (!(array instanceof Array))
-            return false;
+        if (!(array instanceof Array)) return false;
 
         const uniqueItems = array.filter((a, b, c) => c.indexOf(a) === b);
         return array.length === uniqueItems.length;
@@ -830,10 +955,14 @@ export class Validator {
     /**
      * Checks if the value is an instance of the specified object.
      */
-    isInstance(object: any, targetTypeConstructor: new (...args: any[]) => any) {
-        return targetTypeConstructor
-            && typeof targetTypeConstructor === "function"
-            && object instanceof targetTypeConstructor;
+    isInstance(
+        object: any,
+        targetTypeConstructor: new (...args: any[]) => any
+    ) {
+        return (
+            targetTypeConstructor &&
+            typeof targetTypeConstructor === "function" &&
+            object instanceof targetTypeConstructor
+        );
     }
-
 }
